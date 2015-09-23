@@ -1,4 +1,5 @@
 import sys
+import re
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
@@ -38,11 +39,20 @@ def get_question_from_tag(tag, last_ques):
     while r.status_code is not 200:
         r = requests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
-    data = soup.find_all("link")
+    test = soup.find_all("entry")
+    test_data = test[0].find('title')
+    test_data = str(test_data)
+    text = re.search('<title type="text">(.+?)</title>', test_data)
+    test_data = text.group(1)
+    #print test_data
+    """data = soup.find_all("link")
     question = data[2].get('href')
     question = question[question.find('questions') + 19:]
-    if last_ques[str(tag)] != str(question):
-        display_notification("Question %s: " % tag.upper(), question)
+    if (type(question) is str) :
+        print "true" """
+    if last_ques[str(tag)] != test_data:
+        display_notification("Question %s: " % tag.upper(), test_data)
+        last_ques[str(tag)] = test_data
 
 def main(argv):
     if is_valid_syntax(argv):
