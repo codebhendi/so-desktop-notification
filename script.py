@@ -1,5 +1,4 @@
 import sys
-import re
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
@@ -39,17 +38,15 @@ def get_question_from_tag(tag, last_ques):
     while r.status_code is not 200:
         r = requests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
+    #Checking for the tag entry
     test = soup.find_all("entry")
+    #the title of the question will be stored between the
+    #title tag and we will take out that substring
     test_data = test[0].find('title')
     test_data = str(test_data)
-    text = re.search('<title type="text">(.+?)</title>', test_data)
-    test_data = text.group(1)
-    #print test_data
-    """data = soup.find_all("link")
-    question = data[2].get('href')
-    question = question[question.find('questions') + 19:]
-    if (type(question) is str) :
-        print "true" """
+    test_data = test_data[19:len(test_data) - 8] 
+   
+   #checking if the question is not new
     if last_ques[str(tag)] != test_data:
         display_notification("Question %s: " % tag.upper(), test_data)
         last_ques[str(tag)] = test_data
